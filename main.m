@@ -1,6 +1,7 @@
 close all;
+clear;
 template = imread('sampleBills/sum.png');
-imgOriginal = imread('sampleBills/billthreenice.jpg');%This is the size of the template's original image
+imgOriginal = imread('sampleBills/billsixnice.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginal));
 template = imbinarize(rgb2gray(template));
 
@@ -39,11 +40,11 @@ figure
 imshow(imRotated);
 meanX = xy_long(1,1)+xy_long(2,1);
 meanX = meanX /2;
-imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
-
+%imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
+imrect(gca, [xoffSet+1, yoffSet+1, size(imgOriginal,2)-xoffSet, size(template,1)]);
 % sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
 
-sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
+sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),1:size(imgOriginal,2));
 
 stats = [regionprops(sumRegion);regionprops(not(sumRegion))];
 for i = 1:length(stats)
@@ -63,7 +64,7 @@ imageContainer(1).image = sumRegion;
 counter = 1;
 for i=1:numel(stats)
     y_len = stats(i).BoundingBox(4);
-    if abs(y_len-second_y_len)<=(second_y_len/10)
+    if abs(y_len-second_y_len)<=(second_y_len/1.5)
         rectangle('Position', stats(i).BoundingBox, 'EdgeColor','r');
         xStart = floor(stats(i).BoundingBox(1));
         yStart = floor(stats(i).BoundingBox(2));
@@ -89,19 +90,31 @@ for i = 1:length(imageContainer)
         end
     end
 end
-v = imageContainer(length(imageContainer)-1).image;
-imshow(imageContainer(length(imageContainer)).image);
-% n=bwconncomp(imageContainer(length(imageContainer)).image);
-% 
-% h=regionprops(n,'Eulernumber');
-holeNumber = bweuler(not(imageContainer(length(imageContainer)-1).image));
-% figure;
-% BURN = zeros(size(v,1),size(v,2));
-% BURNED = imoverlay(BURN,v,'white');
-figure;
+v = imageContainer(length(imageContainer)-3).image;
 trimmedImage = cutWhitePart(v);
-
-
-
-
+imshow(trimmedImage);
+disp(classify_numbers(trimmedImage));
+% classify_numbers(v);
+% %imshow(imageContainer(length(imageContainer)).image);
+% % n=bwconncomp(imageContainer(length(imageContainer)).image);
+% % 
+% % h=regionprops(n,'Eulernumber');
+% holeNumber = bweuler(not(imageContainer(length(imageContainer)-1).image));
+% % figure;
+% % BURN = zeros(size(v,1),size(v,2));
+% % BURNED = imoverlay(BURN,v,'white');
+% figure;
+% trimmedImage = cutWhitePart(v);
+% filledImage = not(imfill(not(trimmedImage),'holes'));
+% holeExtractedImage = xor(trimmedImage,filledImage);
+% stats = regionprops(holeExtractedImage);
+% stats=sortStats(stats);
+% %imshow(holeExtractedImage); 
+% %hold on;
+% %plot(stats(1).Centroid(1),stats(1).Centroid(2),'r*');
+% 
+% 
+% 
+% 
+% 
 % result = check_horizontal_symmetry(v);

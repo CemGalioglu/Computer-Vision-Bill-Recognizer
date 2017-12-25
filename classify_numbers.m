@@ -1,7 +1,27 @@
-function [outputArg1,outputArg2] = classify_numbers(inputArg1,inputArg2)
-%CLASSÝFY_NUMBERS Summary of this function goes here
+function result = classify_numbers(image)
+%CLASSï¿½FY_NUMBERS Summary of this function goes here
 %   Detailed explanation goes here
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
+num_holes = abs(bweuler(not(image))-1);
+
+if num_holes==2
+    result=8;
+elseif num_holes==1
+    if calculateHoleRatio(image)>1
+        result=0;
+    else
+        if strcmp(findCentroidDirection(image),'DOWN')
+            result=9;
+        else
+            if strcmp(findHoleExtractedCentroid(image),'UP')
+                result=4;
+            else
+                result=6;
+            end
+        end
+    end
+else
+    result=1;
+end
+
 end
 
