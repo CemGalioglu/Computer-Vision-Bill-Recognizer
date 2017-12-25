@@ -1,6 +1,5 @@
 function result = classify_numbers(image)
-%CLASS�FY_NUMBERS Summary of this function goes here
-%   Detailed explanation goes here
+
 num_holes = abs(bweuler(not(image))-1);
 
 if num_holes==2
@@ -20,7 +19,15 @@ elseif num_holes==1
         end
     end
 else
-    result=1;
+    if is_vertically_symmetric(image)
+        if size(image,1)/size(image,2)>1.1
+            result=1;
+        else
+            result=3;
+        end
+    else
+        result=7;
+    end
 end
 
 end

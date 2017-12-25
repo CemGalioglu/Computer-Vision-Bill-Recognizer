@@ -1,7 +1,7 @@
 close all;
 clear;
 template = imread('sampleBills/sum.png');
-imgOriginal = imread('sampleBills/billsixnice.jpg');%This is the size of the template's original image
+imgOriginal = imread('sampleBills/billthreenice.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginal));
 template = imbinarize(rgb2gray(template));
 
@@ -90,7 +90,7 @@ for i = 1:length(imageContainer)
         end
     end
 end
-v = imageContainer(length(imageContainer)-3).image;
+v = imageContainer(length(imageContainer)-5).image;
 trimmedImage = cutWhitePart(v);
 imshow(trimmedImage);
 disp(classify_numbers(trimmedImage));
@@ -117,4 +117,4 @@ disp(classify_numbers(trimmedImage));
 % 
 % 
 % 
-% result = check_horizontal_symmetry(v);
+%result = check_horizontal_symmetry(trimmedImage);
