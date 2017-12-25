@@ -1,6 +1,7 @@
 close all;
 template = imread('sampleBills/sum.png');
-imgOriginal = imread('sampleBills/billthreenice.jpg');%This is the size of the template's original image
+imgOriginal = imread('sampleBills/billfournice.jpg');%This is the size of the template's original image
+imgOriginal = imrotate(imgOriginal,90);
 img = imbinarize(rgb2gray(imgOriginal));
 template = imbinarize(rgb2gray(template));
 
@@ -23,7 +24,6 @@ end
 yDifference = xy_long(2,2)-xy_long(1,2);
 xDifference = xy_long(1,1)-xy_long(2,1);
 degree = radtodeg(atan2(yDifference,xDifference));
-degree = 90;
 imRotated = imrotate(img,90-degree,'crop');
 
 %Using cross correlation to find the template in original image
@@ -41,9 +41,8 @@ meanX = xy_long(1,1)+xy_long(2,1);
 meanX = meanX /2;
 imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
 
-% sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
-
 sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
+
 
 stats = [regionprops(sumRegion);regionprops(not(sumRegion))];
 for i = 1:length(stats)

@@ -1,0 +1,13 @@
+function result = check_horizontal_symmetry(image)
+  
+
+imageTrimmed = cutWhitePart(image);
+imageTrimmedSymmetry = imrotate(imageTrimmed',90);
+if sum(sum(xor(imageTrimmed,imageTrimmedSymmetry)))< numel(imageTrimmed)/50 
+    result = true;
+else
+    result = false;
+end
+    disp(sum(sum(xor(imageTrimmedSymmetry,imageTrimmed))));
+    disp(numel(imageTrimmed));
+
