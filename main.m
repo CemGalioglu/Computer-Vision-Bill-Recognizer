@@ -1,5 +1,5 @@
 template = imread('sampleBills/sum.png');
-imgOriginal = imresize(imread('sampleBills/billthreenice.jpg'),[1328 747]);%This is the size of the template's original image
+imgOriginal = imresize(imread('sampleBills/billFive.jpg'),[1328 747]);%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginal));
 template = imbinarize(rgb2gray(template));
 
