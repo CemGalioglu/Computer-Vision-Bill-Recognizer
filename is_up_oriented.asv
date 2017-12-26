@@ -1,0 +1,14 @@
+function result = is_up_oriented(image)
+%ÝSUPORÝENTED Summary of this function goes here
+%   Detailed explanation goes here
+
+stats =regionprops(image);
+stats = sortStats(stats);
+
+stats_bounding_box = stats(1).BoundingBox
+half_length = floor(stats_bounding_box(4)/2);
+
+up_sum = sum(sum(not(img(half_length)
+
+end
+

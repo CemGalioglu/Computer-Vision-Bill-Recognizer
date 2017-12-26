@@ -26,7 +26,11 @@ else
             result=3;
         end
     else
-        result=7;
+        if is_up_oriented(image)
+            result=7;
+        else
+            result = 2;
+        end
     end
 end
 

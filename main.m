@@ -43,8 +43,10 @@ meanX = meanX /2;
 %imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
 imrect(gca, [xoffSet+1, yoffSet+1, size(imgOriginal,2)-xoffSet, size(template,1)]);
 % sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
-
+%Finding Bill
 sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),1:size(imgOriginal,2));
+%Finding KDV
+sumRegion = imRotated(yoffSet+1-size(template,1):yoffSet+1,1:size(imgOriginal,2));
 
 stats = [regionprops(sumRegion);regionprops(not(sumRegion))];
 for i = 1:length(stats)
@@ -90,7 +92,7 @@ for i = 1:length(imageContainer)
         end
     end
 end
-v = imageContainer(length(imageContainer)-5).image;
+v = imageContainer(length(imageContainer)-2).image;
 trimmedImage = cutWhitePart(v);
 imshow(trimmedImage);
 disp(classify_numbers(trimmedImage));
