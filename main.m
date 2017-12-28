@@ -1,11 +1,11 @@
 close all;
 clear;
 template = imread('sampleBills/sum.png');
-imgOriginal = imread('sampleBills/billSeven.jpg');%This is the size of the template's original image
-img = imbinarize(rgb2gray(imgOriginal));
+imgOriginalOrigin = imread('sampleBills/billSix.jpg');%This is the size of the template's original image
+img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
-imgOriginal =  rgb2gray(imgOriginal);
+imgOriginal =  rgb2gray(imgOriginalOrigin);
 % BW = edge(imgOriginal,'canny');
 % [H,T,R] = hough(BW);
 % P  = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
@@ -188,7 +188,7 @@ for i=1:length(degree_info)
             if(difference<4 && degree_info(i).length>max_length)
                 max_length=degree_info(i).length;
                 max_index=i;
-                second_index=j;
+                second_index=j;   
             end
         
         end
@@ -239,5 +239,6 @@ plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWi
 % plot(xy_long(:,1),xy_long(:,2),'LineWidth',2,'Color','cyan');
 % plot(second_xy_long(:,1),second_xy_long(:,2),'LineWidth',2,'Color','red');
 figure;
-rotated=imrotate(imgOriginal,270+degree_info(max_index).degree,'crop');
+turnDegree = degree_info(max_index).degree;
+rotated=imrotate(imgOriginal,270+turnDegree,'crop');
 imshow(rotated);
