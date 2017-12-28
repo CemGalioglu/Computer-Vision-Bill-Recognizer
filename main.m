@@ -1,7 +1,7 @@
 close all;
 clear;
 template = imread('sampleBills/sum.png');
-imgOriginalOrigin = imread('sampleBills/billSix.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/billFour.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -240,5 +240,10 @@ plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWi
 % plot(second_xy_long(:,1),second_xy_long(:,2),'LineWidth',2,'Color','red');
 figure;
 turnDegree = degree_info(max_index).degree;
-rotated=imrotate(imgOriginal,270+turnDegree,'crop');
+rotated=imrotate(imgOriginal,270+turnDegree,'loose');
 imshow(rotated);
+bill_image= find_inside_region(imgOriginalOrigin,lines(max_index),lines(second_index));
+bill_image=imrotate(bill_image,270+turnDegree,'loose');
+extracted_image=extract_inside_region(rotated,bill_image);
+figure;
+imshow(extracted_image);

@@ -1,5 +1,5 @@
 function [a,b,c] = find_line_function(line)
-%FÝND_LÝNE_FUNCTÝON Summary of this function goes here
+%Fï¿½ND_Lï¿½NE_FUNCTï¿½ON Summary of this function goes here
 %   Detailed explanation goes here
 
 x1 = line.point1(2);
