@@ -1,7 +1,7 @@
-close all;
+close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/billNine.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/billSix.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -37,18 +37,18 @@ lines = houghlines(BW,T,R,P,'FillGap',5000,'MinLength',2);
 max_len = 0;
 
 for k = 1:length(lines)
-   xy = [lines(k).point1; lines(k).point2];
-   degree = lines(k).theta+90;
-
-   % Determine the endpoints of the longest line segment
-   len = norm(lines(k).point1 - lines(k).point2);
-   if ( len > max_len)
-      max_len = len;
-      xy_long = xy;
-   end
-   degree_info(k).degree=degree;
-   degree_info(k).length = len;
-   degree_info(k).xy=xy;
+    xy = [lines(k).point1; lines(k).point2];
+    degree = lines(k).theta+90;
+    
+    % Determine the endpoints of the longest line segment
+    len = norm(lines(k).point1 - lines(k).point2);
+    if ( len > max_len)
+        max_len = len;
+        xy_long = xy;
+    end
+    degree_info(k).degree=degree;
+    degree_info(k).length = len;
+    degree_info(k).xy=xy;
 end
 max_length = 0;
 max_index = 1;
@@ -61,9 +61,9 @@ for i=1:length(degree_info)
             if(difference<4 && degree_info(i).length>max_length)
                 max_length=degree_info(i).length;
                 max_index=i;
-                second_index=j;   
+                second_index=j;
             end
-        
+            
         end
     end
 end
@@ -86,9 +86,16 @@ imshow(extracted_image);
 extracted_image = imresize(extracted_image, [NaN 350]);
 %Using cross correlation to find the template in original image
 correlationMatrix = normxcorr2(template,extracted_image);
+extracted_image_rotated = imrotate(extracted_image,180);
+correlationMatrixRotated = normxcorr2(template,extracted_image_rotated);
+if max(correlationMatrix(:)) < max(correlationMatrixRotated(:))
+    correlationMatrix = correlationMatrixRotated;
+    extracted_image = extracted_image_rotated;
+end
 
 %Get coordinates.
 [ypeak, xpeak] = find(correlationMatrix==max(correlationMatrix(:)));
+
 
 yoffSet = ypeak-size(template,1);
 xoffSet = xpeak-size(template,2);
@@ -108,25 +115,33 @@ sumRegion = extracted_image(yoffSet-1:yoffSet+2+size(template,1),1:size(extracte
 sumRegion = imbinarize(sumRegion);
 figure;imshow(sumRegion);
 
-stats = [regionprops(sumRegion);regionprops(not(sumRegion))];
-for i = 1:length(stats)
+pre_stats = regionprops(not(sumRegion));
+for i = 1:length(pre_stats)
     for j = i:-1:2
-        if stats(j).Area>stats(j-1).Area
-            temp = stats(j);
-            stats(j) = stats(j-1);
-            stats(j-1) = temp;
+        if pre_stats(j).Area>pre_stats(j-1).Area
+            temp = pre_stats(j);
+            pre_stats(j) = pre_stats(j-1);
+            pre_stats(j-1) = temp;
         end
     end
 end
+counter = 1;
+for i=1:length(pre_stats)
+    if abs( size(sumRegion,1)-pre_stats(i).BoundingBox(4))>1 
+        stats(counter) = pre_stats(i);
+        counter = counter + 1;
+    end
+end
+
 second_y_len=stats(2).BoundingBox(4);
-figure
-imshow(sumRegion);
-hold on;
 imageContainer(1).image = sumRegion;
 counter = 1;
+figure;
+imshow(sumRegion);
+hold on;
 for i=1:numel(stats)
     y_len = stats(i).BoundingBox(4);
-    if abs(y_len-second_y_len)<=(second_y_len/1.5)
+    if (y_len/second_y_len)>= 3/4
         rectangle('Position', stats(i).BoundingBox, 'EdgeColor','r');
         xStart = floor(stats(i).BoundingBox(1));
         yStart = floor(stats(i).BoundingBox(2));
@@ -152,7 +167,19 @@ for i = 1:length(imageContainer)
         end
     end
 end
-v = imageContainer(length(imageContainer)-2).image;
-trimmedImage = cutWhitePart(v);
-imshow(trimmedImage);
-disp(classify_numbers(trimmedImage));
+% v = imageContainer(length(imageContainer)-2).image;
+% trimmedImage = cutWhitePart(v);
+% imshow(trimmedImage);
+% disp(classify_numbers(trimmedImage));
+%seD = strel('diamond',80);
+figure;
+for i=7:length(imageContainer)
+    subplot(1,length(imageContainer)-6,i-6);
+    v = imageContainer(i).image;
+  %  v = imresize(v,[1320 768]);
+    trimmedImage = cutWhitePart(v);
+ %   trimmedImage = imerode(trimmedImage,seD);
+    imshow(trimmedImage);
+    disp(classify_numbers(trimmedImage));
+end
+
