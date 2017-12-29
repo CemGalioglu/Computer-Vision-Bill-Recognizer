@@ -1,7 +1,7 @@
 close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/billSix.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/billSeven.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -127,7 +127,7 @@ for i = 1:length(pre_stats)
 end
 counter = 1;
 for i=1:length(pre_stats)
-    if abs( size(sumRegion,1)-pre_stats(i).BoundingBox(4))>1 
+    if abs( size(sumRegion,1)-pre_stats(i).BoundingBox(4))>1
         stats(counter) = pre_stats(i);
         counter = counter + 1;
     end
@@ -171,14 +171,17 @@ end
 % trimmedImage = cutWhitePart(v);
 % imshow(trimmedImage);
 % disp(classify_numbers(trimmedImage));
-%seD = strel('diamond',80);
+seD = strel('line',100,90);
+seD2 = strel('line',100,0);
 figure;
 for i=7:length(imageContainer)
     subplot(1,length(imageContainer)-6,i-6);
     v = imageContainer(i).image;
-  %  v = imresize(v,[1320 768]);
+    v = imresize(v,300);
     trimmedImage = cutWhitePart(v);
- %   trimmedImage = imerode(trimmedImage,seD);
+    trimmedImage = not(trimmedImage);
+    trimmedImage = imdilate(trimmedImage,[seD,seD2]);
+    trimmedImage = not(trimmedImage);
     imshow(trimmedImage);
     disp(classify_numbers(trimmedImage));
 end
