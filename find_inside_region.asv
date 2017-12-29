@@ -1,5 +1,5 @@
 function a = find_inside_region(image,border_line_one,border_line_two)
-%FÝND_ÝNSÝDE_REGÝON Summary of this function goes here
+%Fï¿½ND_ï¿½NSï¿½DE_REGï¿½ON Summary of this function goes here
 %   Detailed explanation goes here
 [a,b,c] = find_line_function(border_line_one);
 [d,e,f] = find_line_function(border_line_two);
@@ -10,7 +10,6 @@ d = a;
 
 points(1).x = 0;
 points(1).y = 0;
-figure;
 for x = 1: size(image,2)
     for y=1:size(image,1)
         if c>f
@@ -28,6 +27,4 @@ for x = 1: size(image,2)
         end
     end
 end
-    imshow(result_image);
-    title('Color inside');
     result_image = 1;
