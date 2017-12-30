@@ -1,20 +1,23 @@
 function result = classify_numbers(image)
 
-num_holes = abs(bweuler(not(image))-1);
+num_holes = abs(bweuler(image)-1);
 
 if num_holes==2
     result=8;
 elseif num_holes==1
-    if calculateHoleRatio(image)>1
+    hole_ratio = calculateHoleRatio(image);
+    if hole_ratio>1
         result=0;
+    elseif hole_ratio<0.03
+        result=classify_numbers(imfill(image,'holes'));
     else
         if strcmp(findCentroidDirection(image),'DOWN')
-            result=9;
+            result=6;
         else
             if strcmp(findHoleExtractedCentroid(image),'UP')
-                result=4;
+                result=9;
             else
-                result=6;
+                result=4;
             end
         end
     end

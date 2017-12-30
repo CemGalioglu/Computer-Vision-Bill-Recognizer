@@ -1,7 +1,7 @@
 close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/billSeven.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/billFour.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -33,13 +33,14 @@ BW = edge(BURNED,'canny');
 [H,T,R] = hough(BW);
 P  = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
 lines = houghlines(BW,T,R,P,'FillGap',5000,'MinLength',2);
-%figure, imshow(BURNED), hold on
+figure, imshow(BURNED), hold on
 max_len = 0;
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
     degree = lines(k).theta+90;
-    
+    plot(xy(:,1),xy(:,2),'LineWidth',k*3,'Color','green');
+
     % Determine the endpoints of the longest line segment
     len = norm(lines(k).point1 - lines(k).point2);
     if ( len > max_len)
@@ -51,15 +52,20 @@ for k = 1:length(lines)
     degree_info(k).xy=xy;
 end
 max_length = 0;
-max_index = 1;
-second_index = 1;
+max_index = 2;
+second_index = 2;
 for i=1:length(degree_info)
     for j=1:length(degree_info)
         if i ~= j
             difference= abs(degree_info(i).degree - degree_info(j).degree);
             difference = min(difference,180-difference);
-            if(difference<4 && degree_info(i).length>max_length)
-                max_length=degree_info(i).length;
+            i_center = (degree_info(i).xy(2,:)+degree_info(i).xy(1,:))/2;
+            j_center = (degree_info(j).xy(2,:)+degree_info(j).xy(1,:))/2;
+            distance = sqrt((i_center(1)-j_center(1))^2+(i_center(2)-j_center(2))^2)
+            sum_length=degree_info(i).length+degree_info(j).length;
+            if(difference<4 && distance>200 && sum_length>max_length)
+                max_length=sum_length;
+                found_distance=distance;
                 max_index=i;
                 second_index=j;
             end
@@ -67,8 +73,8 @@ for i=1:length(degree_info)
         end
     end
 end
-%plot(degree_info(max_index).xy(:,1),degree_info(max_index).xy(:,2),'LineWidth',2,'Color','cyan');
-%plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWidth',2,'Color','red');
+plot(degree_info(max_index).xy(:,1),degree_info(max_index).xy(:,2),'LineWidth',2,'Color','cyan');
+plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWidth',2,'Color','red');
 %figure;
 turnDegree = degree_info(max_index).degree;
 rotated=imrotate(imgOriginal,270+turnDegree,'loose');
@@ -171,17 +177,16 @@ end
 % trimmedImage = cutWhitePart(v);
 % imshow(trimmedImage);
 % disp(classify_numbers(trimmedImage));
-seD = strel('line',100,90);
-seD2 = strel('line',100,0);
+seD = strel('line',10,90);
+seD2 = strel('line',10,0);
 figure;
 for i=7:length(imageContainer)
     subplot(1,length(imageContainer)-6,i-6);
     v = imageContainer(i).image;
-    v = imresize(v,300);
     trimmedImage = cutWhitePart(v);
+    trimmedImage = imresize(trimmedImage,[300 300]);
     trimmedImage = not(trimmedImage);
     trimmedImage = imdilate(trimmedImage,[seD,seD2]);
-    trimmedImage = not(trimmedImage);
     imshow(trimmedImage);
     disp(classify_numbers(trimmedImage));
 end
