@@ -1,7 +1,7 @@
 close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/billEight.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/billFour.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -111,7 +111,7 @@ meanX = xy_long(1,1)+xy_long(2,1);
 meanX = meanX /2;
 %imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
 imrect(gca, [xoffSet+1, yoffSet+1, size(imgOriginal,2)-xoffSet, size(template,1)]);
-% sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
+ %sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
 %Finding Bill
 
 
@@ -196,8 +196,8 @@ end
 seD = strel('line',10,90);
 seD2 = strel('line',10,0);
 figure;
-for i=7:length(imageContainer)
-    subplot(1,length(imageContainer)-6,i-6);
+for i=7:length(imageContainer)-3
+    %subplot(1,length(imageContainer)-7,i-7);
     v = imageContainer(i).image;
     trimmedImage = cutWhitePart(v);
     trimmedImage = imresize(trimmedImage,[300 300]);
@@ -207,3 +207,17 @@ for i=7:length(imageContainer)
     disp(classify_numbers(trimmedImage));
 end
 
+sonuc = imread('sampleBills/sonuc.jpg');
+correlationMatrix = normxcorr2(trimmedImage,sonuc);
+[ypeak, xpeak] = find(correlationMatrix==max(correlationMatrix(:)));
+
+yoffSet = ypeak-size(trimmedImage,1);
+xoffSet = xpeak-size(trimmedImage,2);
+
+figure;imshow(sonuc);
+meanX = xy_long(1,1)+xy_long(2,1);
+meanX = meanX /2;
+%imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
+imrect(gca, [xoffSet+1, yoffSet+1, 300, size(trimmedImage,1)]);
+ %sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
+%Finding Bill

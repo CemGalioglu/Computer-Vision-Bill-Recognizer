@@ -9,7 +9,8 @@ elseif num_holes==1
     if hole_ratio>1
         result=0;
     elseif hole_ratio<0.03
-        result=classify_numbers(imfill(image,'holes'));
+        %result=classify_numbers(imfill(image,'holes'));
+        result=5;
     else
         if strcmp(findCentroidDirection(image),'DOWN')
             result=6;
