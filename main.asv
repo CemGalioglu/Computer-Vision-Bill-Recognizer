@@ -145,20 +145,12 @@ for i=1:numel(mid_stats)
     y_len = mid_stats(i).BoundingBox(4);
     y_wid = mid_stats(i).BoundingBox(3);
     if (y_len/second_y_len)>= 3/4
-        next_stats(counter)=mid_stats(i);
-        widthSum = widthSum + next_stats(counter).BoundingBox(3);
-        
+        stats(counter)=mid_stats(i);
         counter = counter + 1;
+        widthSum = widthSum + stats(counter).
     end
 end
-avgWidth = widthSum/counter;
-counter=1;
-for i=1:numel(next_stats)
-    if next_stats(i).BoundingBox(3)< avgWidth *3/2
-        stats(counter)=next_stats(i);
-        counter = counter + 1;
-    end
-end
+
 imageContainer(1).image = sumRegion;
 counter = 1;
 figure;
