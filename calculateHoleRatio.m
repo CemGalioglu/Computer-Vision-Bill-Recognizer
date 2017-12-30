@@ -11,9 +11,6 @@ function area_ratio = calculateHoleRatio(image)
 % result = holeArea / imageArea ;
     filledImage = not(imfill(image,'holes'));
     holeExtractedImage = not(xor(image,filledImage));
-    figure;
-    imshow(holeExtractedImage);
-    title('hole extracted image');
-    area_ratio = sum(holeExtractedImage(:))/sum(sum(ones(size(image,1),size(image,2))))
+    area_ratio = sum(holeExtractedImage(:))/sum(sum(ones(size(image,1),size(image,2))));
 end
 

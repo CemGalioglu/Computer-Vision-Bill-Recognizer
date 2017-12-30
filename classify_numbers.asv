@@ -1,18 +1,6 @@
 function result = classify_numbers(image)
 filled = imfill(image , 'holes');
-holes = filled & ~image;
-bigHoles = bwareaopen(holes,75);
-smallHoles = holes & ~bigHoles ;
-image = image | smallHoles ;
-% figure;
-% subplot(1,4,1);
-% imshow(image);
-% subplot(1,4,2);
-% imshow(bigHoles);
-% subplot(1,4,3);
-% imshow(smallHoles);
-% subplot(1,4,4);
-% imshow(image);
+holes = filled &
 num_holes = abs(bweuler(image)-1);
 if num_holes>1
     result=8;

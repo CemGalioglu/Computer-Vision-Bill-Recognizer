@@ -1,7 +1,7 @@
 close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/billEight.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/bill7.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -10,7 +10,7 @@ imgOriginal =  rgb2gray(imgOriginalOrigin);
 imgFiltered = imgaussfilt(imgOriginal, 8);
 [~, threshold] = edge(imgFiltered, 'sobel');
 fudgeFactor = .5;
-BWs = edge(imgFiltered,'sobel', threshold * fudgeFactor);
+BWs = edge(imgFiltered,'sobel' , threshold * fudgeFactor);
 %figure, imshow(BWs), title('binary gradient mask');
 se90 = strel('line', 30, 90);
 se0 = strel('line', 30, 0);
@@ -33,7 +33,6 @@ BW = edge(BURNED,'canny');
 [H,T,R] = hough(BW);
 P  = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
 lines = houghlines(BW,T,R,P,'FillGap',5000,'MinLength',2);
-figure, imshow(BURNED), hold on
 max_len = 0;
 
 for k = 1:length(lines)
@@ -61,7 +60,7 @@ for i=1:length(degree_info)
             difference = min(difference,180-difference);
             i_center = (degree_info(i).xy(2,:)+degree_info(i).xy(1,:))/2;
             j_center = (degree_info(j).xy(2,:)+degree_info(j).xy(1,:))/2;
-            distance = sqrt((i_center(1)-j_center(1))^2+(i_center(2)-j_center(2))^2)
+            distance = sqrt((i_center(1)-j_center(1))^2+(i_center(2)-j_center(2))^2);
             sum_length=degree_info(i).length+degree_info(j).length;
             if(difference<4 && distance>200 && sum_length>max_length)
                 max_length=sum_length;
@@ -73,8 +72,9 @@ for i=1:length(degree_info)
         end
     end
 end
-plot(degree_info(max_index).xy(:,1),degree_info(max_index).xy(:,2),'LineWidth',2,'Color','cyan');
-plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWidth',2,'Color','red');
+% figure, imshow(BURNED), hold on
+% plot(degree_info(max_index).xy(:,1),degree_info(max_index).xy(:,2),'LineWidth',2,'Color','cyan');
+% plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWidth',2,'Color','red');
 %figure;
 turnDegree = degree_info(max_index).degree;
 rotated=imrotate(imgOriginal,270+turnDegree,'loose');
@@ -82,8 +82,8 @@ rotated=imrotate(imgOriginal,270+turnDegree,'loose');
 bill_image= find_inside_region(imgOriginalOrigin,lines(max_index),lines(second_index));
 bill_image=imrotate(bill_image,270+turnDegree,'loose');
 extracted_image=extract_inside_region(rotated,bill_image);
-figure;
-imshow(extracted_image);
+% figure;
+% imshow(extracted_image);
 
 
 
@@ -106,11 +106,11 @@ end
 yoffSet = ypeak-size(template,1);
 xoffSet = xpeak-size(template,2);
 
-figure;imshow(extracted_image);
+% figure;imshow(extracted_image);
 meanX = xy_long(1,1)+xy_long(2,1);
 meanX = meanX /2;
 %imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
-imrect(gca, [xoffSet+1, yoffSet+1, size(imgOriginal,2)-xoffSet, size(template,1)]);
+% imrect(gca, [xoffSet+1, yoffSet+1, size(imgOriginal,2)-xoffSet, size(template,1)]);
 % sumRegion = imRotated(yoffSet+1:yoffSet+1+size(template,1),xoffSet+1:meanX);
 %Finding Bill
 
@@ -119,7 +119,7 @@ sumRegion = extracted_image(yoffSet-1:yoffSet+2+size(template,1),1:size(extracte
 %Finding KDV
 %sumRegion = extracted_image(yoffSet+1-size(template,1):yoffSet+1,1:size(extracted_image,2));
 sumRegion = imbinarize(sumRegion);
-figure;imshow(sumRegion);
+%  figure;imshow(sumRegion);
 
 pre_stats = regionprops(not(sumRegion));
 for i = 1:length(pre_stats)
@@ -145,12 +145,20 @@ for i=1:numel(mid_stats)
     y_len = mid_stats(i).BoundingBox(4);
     y_wid = mid_stats(i).BoundingBox(3);
     if (y_len/second_y_len)>= 3/4
-        stats(counter)=mid_stats(i);
+        next_stats(counter)=mid_stats(i);
+        widthSum = widthSum + next_stats(counter).BoundingBox(3);
+        
         counter = counter + 1;
-        widthSum = widthSum + stats(counter).
     end
 end
-
+avgWidth = widthSum/counter;
+counter=1;
+for i=1:numel(next_stats)
+    if next_stats(i).BoundingBox(3)< avgWidth *3/2
+        stats(counter)=next_stats(i);
+        counter = counter + 1;
+    end
+end
 imageContainer(1).image = sumRegion;
 counter = 1;
 figure;
@@ -185,9 +193,18 @@ end
 % trimmedImage = cutWhitePart(v);
 % imshow(trimmedImage);
 % disp(classify_numbers(trimmedImage));
-seD = strel('line',10,90);
-seD2 = strel('line',10,0);
+seD = strel('line',20,90);
+seD2 = strel('line',20,0);
 figure;
+for i=7:length(imageContainer)
+    v = imageContainer(i).image;
+    trimmedImage = cutWhitePart(v);
+    trimmedImage = imresize(trimmedImage,[300 300]);
+    trimmedImage = not(trimmedImage);
+    trimmedImage = imdilate(trimmedImage,[seD,seD2]);
+    disp(classify_numbers(trimmedImage));
+end
+con
 for i=7:length(imageContainer)
     subplot(1,length(imageContainer)-6,i-6);
     v = imageContainer(i).image;
@@ -196,6 +213,6 @@ for i=7:length(imageContainer)
     trimmedImage = not(trimmedImage);
     trimmedImage = imdilate(trimmedImage,[seD,seD2]);
     imshow(trimmedImage);
-    disp(classify_numbers(trimmedImage));
+    
 end
 
