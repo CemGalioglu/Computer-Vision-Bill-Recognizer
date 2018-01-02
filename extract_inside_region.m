@@ -10,7 +10,7 @@ end_column_index=length(vertical_sum);
 while vertical_sum(end_column_index)==0
     end_column_index = end_column_index-1; 
 end
-disp(end_column_index);
+%disp(end_column_index);
 extracted_image=image(:,column_index:end_column_index);
 end
 
