@@ -2,8 +2,24 @@ files = dir('sampleBills/');
 template = imread('templates/sum.jpg');
 sonuc = rgb2gray(imread('templates/sonuc.jpg'));
 template = imbinarize(rgb2gray(template));
+truth = {};
+fileNumber = 1;
+test_counter = 1;
+total_trial = 0;
+total_positive_rule_based = 0;
+total_positive_correlation = 0;
 for file = files'
-    if file.bytes>0
+    if file.name(1)=='b'
+        startNumber = strfind(file.name,'-');
+        truth(1,fileNumber) = cellstr(file.name(startNumber+1:length(file.name)-4));
+        if fileNumber~= 7 && fileNumber~=16
+            total_trial = total_trial + length(truth{1,fileNumber});
+        end
+        fileNumber = fileNumber + 1;
+    end
+end
+for file = files'
+    if file.name(1)=='b'
         close all;
         imgOriginalOrigin = imread([file.folder '/' file.name]);%This is the size of the template's original image
         img = imbinarize(rgb2gray(imgOriginalOrigin));
@@ -227,7 +243,9 @@ for file = files'
             trimmedImage = imdilate(trimmedImage,[seD,seD2]);
             %     disp(classify_numbers(trimmedImage));
             container = [container classify_numbers(trimmedImage)];
-            
+            if  test_counter~=5 && test_counter~=14 && (str2num(truth{1,test_counter}(i)))==container(i)
+                total_positive_rule_based = total_positive_rule_based + 1;
+            end
             %**************Finding with cross-correlation***************%
             correlationMatrix = normxcorr2(trimmedImage,sonuc);
             [ypeak, xpeak] = find(correlationMatrix==max(correlationMatrix(:)));
@@ -239,12 +257,21 @@ for file = files'
                 xoffSet=0;
             end
             correlation_container = [correlation_container round(xoffSet/300)];
+            if  test_counter ~=5  && test_counter~=14&&(str2num(truth{1,test_counter}(i)))==correlation_container(i)
+                total_positive_correlation = total_positive_correlation + 1;
+            end
             %*************Finding with cross-correlation***************%
         end
         
         fprintf('%g ',container);
         fprintf('\n');
         fprintf('%g ',correlation_container);
+        
+        test_counter = test_counter + 1;
     end
-    clearvars -except template sonuc
+    clearvars -except template sonuc files truth test_counter total_positive_rule_based total_positive_correlation total_trial
 end
+rule_based_percentage = total_positive_rule_based / total_trial;
+correlation_based_percentage = total_positive_correlation / total_trial;
+fprintf('Total percentage with rule based system is %g\n',rule_based_percentage);
+fprintf('Total percentage with cross correlation is %g\n',correlation_based_percentage);
