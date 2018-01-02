@@ -1,5 +1,5 @@
 function result = is_up_oriented(image)
-%ÝSUPORÝENTED Summary of this function goes here
+%ï¿½SUPORï¿½ENTED Summary of this function goes here
 %   Detailed explanation goes here
 % half_length = floor(size(image,1)/2);
 % up_sum = sum(sum(not(image(1:half_length,:))));
@@ -9,16 +9,11 @@ function result = is_up_oriented(image)
 %     result = true;
 % else 
 %     result = false;
-sum = 0;
-for i=1:30
-    for j=2:size(image,2)
-        if image(i,j)==1
-            sum = sum + 1;
-        end
-    end
-end
-ratio = sum / (size(image,2)*30)
-if ratio>0.8
+upper_sum = sum(sum(image(1:30,:)));
+lower_sum = sum(sum(image(size(image,1)-30:size(image,1),:)));
+upper_ratio = upper_sum / (size(image,2)*30)
+lower_ratio = lower_sum / (size(image,2)*30)
+if upper_ratio>0.6 && lower_ratio < 0.5
     result = true;
 else
     result = false;

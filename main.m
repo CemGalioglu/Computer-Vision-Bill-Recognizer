@@ -1,7 +1,7 @@
 close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/bill21.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/bill4.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
