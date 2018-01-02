@@ -14,7 +14,10 @@ image = image | smallHoles ;
 % subplot(1,4,4);
 % imshow(image);
 num_holes = abs(bweuler(image)-1);
-if num_holes>1
+
+if upper_left_oriented(image)
+    result = 5;
+elseif num_holes>1
     result=8;
 elseif num_holes==1
     hole_ratio = calculateHoleRatio(image);
