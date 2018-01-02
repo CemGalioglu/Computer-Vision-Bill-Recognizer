@@ -1,7 +1,7 @@
 close all;clc;
 clear;
 template = imread('sampleBills/sum.jpg');
-imgOriginalOrigin = imread('sampleBills/bill17.jpg');%This is the size of the template's original image
+imgOriginalOrigin = imread('sampleBills/bill2.jpg');%This is the size of the template's original image
 img = imbinarize(rgb2gray(imgOriginalOrigin));
 template = imbinarize(rgb2gray(template));
 
@@ -215,7 +215,8 @@ for i=1:length(imageContainer)
     imshow(trimmedImage);
     
 end
-
+sonuc = rgb2gray(imread('sampleBills/sonuc.jpg'));
+correlation_container = [];
 for i=1:length(imageContainer)
     v = imageContainer(i).image;
     trimmedImage = cutWhitePart(v);
@@ -224,6 +225,21 @@ for i=1:length(imageContainer)
     trimmedImage = imdilate(trimmedImage,[seD,seD2]);
 %     disp(classify_numbers(trimmedImage));
     container = [container classify_numbers(trimmedImage)];
+    
+    %**************Finding with cross-correlation***************%
+    correlationMatrix = normxcorr2(trimmedImage,sonuc);
+    [ypeak, xpeak] = find(correlationMatrix==max(correlationMatrix(:)));
+    yoffSet = ypeak-size(trimmedImage,1);
+    xoffSet = xpeak-size(trimmedImage,2);
+    meanX = xy_long(1,1)+xy_long(2,1);
+    meanX = meanX /2;
+    if xoffSet<0
+        xoffSet=0;
+    end
+    correlation_container = [correlation_container round(xoffSet/300)];
+    %*************Finding with cross-correlation***************%
 end
 
 fprintf('%g ',container);
+fprintf('\n');
+fprintf('%g ',correlation_container);
