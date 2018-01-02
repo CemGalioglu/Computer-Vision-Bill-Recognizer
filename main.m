@@ -8,6 +8,7 @@ test_counter = 1;
 total_trial = 0;
 total_positive_rule_based = 0;
 total_positive_correlation = 0;
+total_positive_random = 0;
 for file = files'
     if file.name(1)=='b'
         startNumber = strfind(file.name,'-');
@@ -260,6 +261,10 @@ for file = files'
             if  test_counter ~=5  && test_counter~=14&&(str2num(truth{1,test_counter}(i)))==correlation_container(i)
                 total_positive_correlation = total_positive_correlation + 1;
             end
+             if  test_counter ~=5  && test_counter~=14&&(randi(10)-1)==correlation_container(i)
+                total_positive_random = total_positive_random + 1;
+            end
+            
             %*************Finding with cross-correlation***************%
         end
         
@@ -269,9 +274,11 @@ for file = files'
         
         test_counter = test_counter + 1;
     end
-    clearvars -except template sonuc files truth test_counter total_positive_rule_based total_positive_correlation total_trial
+    clearvars -except template sonuc files truth test_counter total_positive_rule_based total_positive_correlation total_trial total_positive_random
 end
 rule_based_percentage = total_positive_rule_based / total_trial;
 correlation_based_percentage = total_positive_correlation / total_trial;
+random_percentage = total_positive_random / total_trial;
 fprintf('Total percentage with rule based system is %g\n',rule_based_percentage);
 fprintf('Total percentage with cross correlation is %g\n',correlation_based_percentage);
+fprintf('Total percentage with random values is %g\n',random_percentage);
