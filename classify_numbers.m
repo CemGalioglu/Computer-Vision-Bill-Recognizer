@@ -16,10 +16,11 @@ elseif num_holes>1 %If it has more than two holes it is 8
     result=8;
 elseif num_holes==1 %If it has on hole it can be 4,6 or 9 but it can sometimes be 2 due to some noise on the image
     hole_ratio = calculateHoleRatio(image); 
-    if hole_ratio>0.18 %If the hole on the image is bigger than a certain size it is 0
+    direction=findHoleExtractedCentroid(image);
+    if strcmp(direction,'MID') && is_totally_symmetric(image)  %If the hole on the image is bigger than a certain size it is 0
         result=0;
     else
-        direction=findHoleExtractedCentroid(image); %We are finding where is the hole on the image
+         %We are finding where is the hole on the image
         if strcmp(direction,'NONE') %If it is close to middle it is 2
             result = 2;
         elseif strcmp(direction,'DOWN') %If it is lower side of the image it 6
