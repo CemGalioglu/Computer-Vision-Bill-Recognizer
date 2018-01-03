@@ -17,9 +17,9 @@ for file = files'
     if file.name(1)=='b'
         startNumber = strfind(file.name,'-');
         truth(1,fileNumber) = cellstr(file.name(startNumber+1:length(file.name)-4));
-        if fileNumber ~= 13 && fileNumber~= 7 && fileNumber~=16
+        
             total_trial = total_trial + length(truth{1,fileNumber});
-        end
+      
         fileNumber = fileNumber + 1;
     end
 end
@@ -242,7 +242,7 @@ for file = files'
             trimmedImage = imdilate(trimmedImage,[seD,seD2]);
             %     disp(classify_numbers(trimmedImage));
             container = [container classify_numbers(trimmedImage)];
-            if  test_counter ~=11 && test_counter~=5 && test_counter~=14 && (str2num(truth{1,test_counter}(i)))==container(i)
+            if  i<=length(truth{1,test_counter}) && (str2num(truth{1,test_counter}(i)))==container(i)
                 total_positive_rule_based = total_positive_rule_based + 1;
             end
             %**************Finding with cross-correlation***************%
@@ -256,10 +256,10 @@ for file = files'
                 xoffSet=0;
             end
             correlation_container = [correlation_container round(xoffSet/300)];
-            if  test_counter ~=11 && test_counter ~=5  && test_counter~=14&&(str2num(truth{1,test_counter}(i)))==correlation_container(i)
+            if  i<=length(truth{1,test_counter}) &&(str2num(truth{1,test_counter}(i)))==correlation_container(i)
                 total_positive_correlation = total_positive_correlation + 1;
             end
-             if test_counter ~=11 && test_counter ~=5  && test_counter~=14&&(randi(10)-1)==correlation_container(i)
+             if i<=length(truth{1,test_counter}) &&(randi(10)-1)==correlation_container(i)
                 total_positive_random = total_positive_random + 1;
             end
             
