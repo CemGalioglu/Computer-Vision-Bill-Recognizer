@@ -2,6 +2,7 @@ files = dir('sampleBills/');
 template = imread('templates/sum.jpg');
 sonuc = rgb2gray(imread('templates/sonuc.jpg'));
 template = imbinarize(rgb2gray(template));
+
 truth = {};
 fileNumber = 1;
 test_counter = 1;
@@ -9,6 +10,9 @@ total_trial = 0;
 total_positive_rule_based = 0;
 total_positive_correlation = 0;
 total_positive_random = 0;
+
+%*******************************For loop for the finding the total number
+%letters *********************************
 for file = files'
     if file.name(1)=='b'
         startNumber = strfind(file.name,'-');
@@ -19,11 +23,14 @@ for file = files'
         fileNumber = fileNumber + 1;
     end
 end
+
+%******For loop for finding numbers with rule based classification and
+%cross correlation and comparing the results******************%
 for file = files'
-    if file.name(1)=='b'
+    if file.name(1)=='b' %Each bill starts with b there can be other system files
         close all;
-        imgOriginalOrigin = imread([file.folder '/' file.name]);%This is the size of the template's original image
-        img = imbinarize(rgb2gray(imgOriginalOrigin));
+        imgOriginalOrigin = imread([file.folder '/' file.name]);%Original bill image
+       % img = imbinarize(rgb2gray(imgOriginalOrigin)); %
         
         imgOriginal =  rgb2gray(imgOriginalOrigin);
         

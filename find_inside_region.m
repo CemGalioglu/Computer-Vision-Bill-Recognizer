@@ -1,9 +1,8 @@
 function result_binary = find_inside_region(image,border_line_one,border_line_two)
-%F�ND_�NS�DE_REG�ON Summary of this function goes here
-%   Detailed explanation goes here
-[a,b,c] = find_line_function(border_line_one);
-[d,e,f] = find_line_function(border_line_two);
-result_binary=zeros(size(image,1),size(image,2));
+
+[a,b,c] = find_line_function(border_line_one); %We are finding the line function of the hough lines
+[d,e,f] = find_line_function(border_line_two); 
+result_binary=zeros(size(image,1),size(image,2)); %We are creating an image that has 1s between two lines
 for x = 1: size(image,2)
     for y=1:size(image,1)
         if c>f

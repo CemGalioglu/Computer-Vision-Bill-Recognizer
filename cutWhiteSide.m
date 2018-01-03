@@ -1,6 +1,7 @@
 function [trimmedImage] = cutWhiteSide(image)
-%CUTWH�TEPARTS Summary of this function goes here
-%   Detailed explanation goes here
+%We are calculating the not of the image
+%Then we are cutting the columns left to right until we find a column which
+%has at least one 1 in it
 sums = sum (not(image));
 elementx = 0;
 counter = 0;

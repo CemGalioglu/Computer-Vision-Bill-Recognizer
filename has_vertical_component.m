@@ -1,6 +1,4 @@
 function result = has_vertical_component(image)
-%HAS_VERTÝCAL_COMPONENT Summary of this function goes here
-%   Detailed explanation goes here
 counter = 0;
 result = false;
 for column = 1 : size(image,2)
@@ -14,4 +12,4 @@ for column = 1 : size(image,2)
             result = true;
         end
     end
-    
+end

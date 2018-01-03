@@ -1,5 +1,4 @@
 function result = findCentroidDirection(image)
-%FINDCENTROIDDIRECTION Summary of this function goes here
     stats = regionprops(image);
     stats=sortStats(stats);
     if size(stats,1) == 0
