@@ -34,28 +34,25 @@ for file = files'
         
         imgOriginal =  rgb2gray(imgOriginalOrigin);
         
+        %***Preparing the image for hough lines with segmentation***%
+        %https://www.mathworks.com/help/images/examples/detecting-a-cell-using-image-segmentation.html
         imgFiltered = imgaussfilt(imgOriginal, 8);
         [~, threshold] = edge(imgFiltered, 'sobel');
         fudgeFactor = .5;
         BWs = edge(imgFiltered,'sobel' , threshold * fudgeFactor);
-        %figure, imshow(BWs), title('binary gradient mask');
         se90 = strel('line', 30, 90);
         se0 = strel('line', 30, 0);
         BWsdil = imdilate(BWs, [se90 se0]);
-        %figure, imshow(BWsdil), title('dilated gradient mask');
-        BWdfill = imfill(BWsdil, 'holes');
-        %figure, imshow(BWdfill);
-        %title('binary image with filled holes');
-        
+        BWdfill = imfill(BWsdil, 'holes');        
         seD = strel('diamond',7);
         BWfinal = imerode(BWdfill,seD);
         BWfinal = imerode(BWfinal,seD);
-        %figure, imshow(BWfinal), title('segmented image');
-        %BWnobord = imclearborder(BWfinal, 8);
-        %figure, imshow(BWnobord), title('cleared border image');
         BURN = zeros(size(BWfinal,1),size(BWfinal,2));
         BURNED = rgb2gray(imoverlay(BURN,BWfinal,'white'));
-        %figure, imshow(BURNED), title('burnt image');
+        %***********************************************************%
+        
+        %***********Finding hough lines on image with 5000 fill gap******%
+        %https://www.mathworks.com/help/images/ref/houghlines.html
         BW = edge(BURNED,'canny');
         [H,T,R] = hough(BW);
         P  = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
@@ -65,7 +62,6 @@ for file = files'
         for k = 1:length(lines)
             xy = [lines(k).point1; lines(k).point2];
             degree = lines(k).theta+90;
-            %    plot(xy(:,1),xy(:,2),'LineWidth',k*3,'Color','green');
             
             % Determine the endpoints of the longest line segment
             len = norm(lines(k).point1 - lines(k).point2);
@@ -77,6 +73,7 @@ for file = files'
             degree_info(k).length = len;
             degree_info(k).xy=xy;
         end
+        
         max_length = 0;
         max_index = 2;
         second_index = 2;
@@ -105,16 +102,10 @@ for file = files'
         %figure;
         turnDegree = degree_info(max_index).degree;
         rotated=imrotate(imgOriginal,270+turnDegree,'loose');
-        %imshow(rotated);
         bill_image= find_inside_region(imgOriginalOrigin,lines(max_index),lines(second_index));
         bill_image=imrotate(bill_image,270+turnDegree,'loose');
         extracted_image=extract_inside_region(rotated,bill_image);
-        % figure;
-        % imshow(extracted_image);
-        
-        
-        
-        %********************END*********************ExtractingBillFromImage*******************END*************************%
+        %************************************************************************************%
         
         extracted_image = imresize(extracted_image, [NaN 350]);
         %Using cross correlation to find the template in original image
