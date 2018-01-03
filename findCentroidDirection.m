@@ -9,8 +9,8 @@ function result = findCentroidDirection(image)
     elseif ((stats(1).Centroid(2)-halfway)/halfway)>0.11
         result='DOWN';
     else 
-        direction = (stats(1).Centroid(2)-halfway)/halfway
-        result='MID'
+        direction = (stats(1).Centroid(2)-halfway)/halfway;
+        result='MID';
     end
 end
 

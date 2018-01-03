@@ -29,6 +29,7 @@ end
 for file = files'
     if file.name(1)=='b'%Each bill starts with b there can be other system files
         close all;
+        file.name
         imgOriginalOrigin = imread([file.folder '/' file.name]);%Original bill image
        % img = imbinarize(rgb2gray(imgOriginalOrigin)); %
         
