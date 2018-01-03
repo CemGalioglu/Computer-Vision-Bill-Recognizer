@@ -27,7 +27,7 @@ end
 %******For loop for finding numbers with rule based classification and
 %cross correlation and comparing the results******************%
 for file = files'
-    if file.name(1)=='b' %Each bill starts with b there can be other system files
+    if file.name(1)=='b'%Each bill starts with b there can be other system files
         close all;
         imgOriginalOrigin = imread([file.folder '/' file.name]);%Original bill image
        % img = imbinarize(rgb2gray(imgOriginalOrigin)); %
@@ -150,7 +150,12 @@ for file = files'
             end
         end
         counter = 1;
+        figure;
+        imshow(sumRegion);
+        title('Pre Stats');
+        hold on;
         for i=1:length(pre_stats)
+            rectangle('Position', pre_stats(i).BoundingBox, 'EdgeColor','r');
             if abs( size(sumRegion,1)-pre_stats(i).BoundingBox(4))>1
                 mid_stats(counter) = pre_stats(i);
                 counter = counter + 1;
@@ -159,26 +164,40 @@ for file = files'
         second_y_len=mid_stats(2).BoundingBox(4);
         counter = 1;
         widthSum =0;
+        figure;
+        imshow(sumRegion);
+        title('Mid Stats');
+        hold on;
         for i=1:numel(mid_stats)
+            rectangle('Position', pre_stats(i).BoundingBox, 'EdgeColor','r');
             y_len = mid_stats(i).BoundingBox(4);
             y_wid = mid_stats(i).BoundingBox(3);
             if (y_len/second_y_len)>= 3/4
-                next_stats(counter)=mid_stats(i);
-                widthSum = widthSum + next_stats(counter).BoundingBox(3);
-                
+                close_stats(counter)=mid_stats(i);
+                widthSum = widthSum + close_stats(counter).BoundingBox(3);
                 counter = counter + 1;
             end
         end
-        avgWidth = widthSum/counter;
-        counter=1;
-        for i=1:numel(next_stats)
-            if next_stats(i).BoundingBox(3)< avgWidth *3/2
-                close_stats(counter)=next_stats(i);
-                counter = counter + 1;
-            end
-        end
+%         avgWidth = widthSum/counter;
+%         counter=1;
+%         figure;
+%         imshow(sumRegion);
+%         title('Next Stats');
+%         hold on;
+%         for i=1:numel(next_stats)
+%             rectangle('Position', next_stats(i).BoundingBox, 'EdgeColor','r');            
+%             if next_stats(i).BoundingBox(3)< avgWidth *3/2
+%                 close_stats(counter)=next_stats(i);
+%                 counter = counter + 1;
+%             end
+%         end
         counter = 1;
+        figure;
+        imshow(sumRegion);
+        title('Close Stats');
+        hold on;
         for i=1:numel(close_stats)
+            rectangle('Position', close_stats(i).BoundingBox, 'EdgeColor','r');                        
             if close_stats(i).BoundingBox(1)> size(sumRegion,2)/2
                 stats(counter)=close_stats(i);
                 counter = counter + 1;
@@ -188,6 +207,7 @@ for file = files'
         counter = 1;
         figure;
         imshow(sumRegion);
+        title('Stats');
         hold on;
         for i=1:numel(stats)
             rectangle('Position', stats(i).BoundingBox, 'EdgeColor','r');
