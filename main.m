@@ -50,6 +50,7 @@ for file = files'
         BWfinal = imerode(BWfinal,seD);
         BURN = zeros(size(BWfinal,1),size(BWfinal,2));
         BURNED = rgb2gray(imoverlay(BURN,BWfinal,'white'));
+        %figure;imwrite(BURNED,'BURNED.jpg');
         %***********************************************************%
         
         %***********Finding hough lines on image with 5000 fill gap******%
@@ -59,11 +60,11 @@ for file = files'
         P  = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
         lines = houghlines(BW,T,R,P,'FillGap',5000,'MinLength',2);
         max_len = 0;
-        
+        figure, imshow(BURNED), hold on
         for k = 1:length(lines)
             xy = [lines(k).point1; lines(k).point2];
             degree = lines(k).theta+90;
-            
+            plot(xy(:,1),xy(:,2),'LineWidth',8,'Color','green');
             % Determine the endpoints of the longest line segment
             len = norm(lines(k).point1 - lines(k).point2);
             if ( len > max_len)
@@ -97,15 +98,18 @@ for file = files'
                 end
             end
         end
-        % figure, imshow(BURNED), hold on
-        % plot(degree_info(max_index).xy(:,1),degree_info(max_index).xy(:,2),'LineWidth',2,'Color','cyan');
-        % plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWidth',2,'Color','red');
+         figure, imshow(BURNED), hold on
+         plot(degree_info(max_index).xy(:,1),degree_info(max_index).xy(:,2),'LineWidth',8,'Color','cyan');
+         plot(degree_info(second_index).xy(:,1),degree_info(second_index).xy(:,2),'LineWidth',8,'Color','red');
         %figure;
         turnDegree = degree_info(max_index).degree;
         rotated=imrotate(imgOriginal,270+turnDegree,'loose');
+        %figure; imwrite(rotated,'image_rotated.jpg');
         bill_image= find_inside_region(imgOriginalOrigin,lines(max_index),lines(second_index));
+        %figure; imwrite(bill_image,'bill_image_not_rotated.jpg');
         bill_image=imrotate(bill_image,270+turnDegree,'loose');
         extracted_image=extract_inside_region(rotated,bill_image);
+        %figure; imwrite(extracted_image,'extracted_image_not_resized.jpg');
         %************************************************************************************%
         
         extracted_image = imresize(extracted_image, [NaN 350]);
@@ -125,7 +129,7 @@ for file = files'
         yoffSet = ypeak-size(template,1);
         xoffSet = xpeak-size(template,2);
         
-        % figure;imshow(extracted_image);
+        %figure;imshow(extracted_image);
         meanX = xy_long(1,1)+xy_long(2,1);
         meanX = meanX /2;
         %imrect(gca, [xoffSet+1, yoffSet+1, meanX-xoffSet, size(template,1)]);
@@ -156,7 +160,7 @@ for file = files'
         title('Pre Stats');
         hold on;
         for i=1:length(pre_stats)
-            rectangle('Position', pre_stats(i).BoundingBox, 'EdgeColor','r');
+            rectangle('Position', pre_stats(i).BoundingBox, 'EdgeColor','r','LineWidth',3);
             if abs( size(sumRegion,1)-pre_stats(i).BoundingBox(4))>1
                 mid_stats(counter) = pre_stats(i);
                 counter = counter + 1;
@@ -211,7 +215,7 @@ for file = files'
         title('Stats');
         hold on;
         for i=1:numel(stats)
-            rectangle('Position', stats(i).BoundingBox, 'EdgeColor','r');
+            rectangle('Position', stats(i).BoundingBox, 'EdgeColor','r','LineWidth',3);
             xStart = floor(stats(i).BoundingBox(1));
             yStart = floor(stats(i).BoundingBox(2));
             xEnd = xStart+floor(stats(i).BoundingBox(3));
@@ -276,6 +280,8 @@ for file = files'
             if xoffSet<0
                 xoffSet=0;
             end
+            %figure;imshow(sonuc);
+            %imrect(gca, [xoffSet+1, yoffSet+1, 300, 300]);
             correlation_container = [correlation_container round(xoffSet/300)];
             if  i<=length(truth{1,test_counter}) &&(str2num(truth{1,test_counter}(i)))==correlation_container(i)
                 total_positive_correlation = total_positive_correlation + 1;
@@ -286,12 +292,12 @@ for file = files'
             
             %*************Finding with cross-correlation***************%
         end
-        fprintf('%g',str2num(truth{1,test_counter}));
-        fprintf('\n');
+        %fprintf('%g',str2num(truth{1,test_counter}));
+        %fprintf('\n');
         fprintf('%g ',container);
         fprintf('\n');
         fprintf('%g ',correlation_container);
-        
+        fprintf('\n');
         test_counter = test_counter + 1;
     end
     clearvars -except template sonuc files truth test_counter total_positive_rule_based total_positive_correlation total_trial total_positive_random
